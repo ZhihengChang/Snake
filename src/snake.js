@@ -130,5 +130,4 @@ if(start){
     generateFood();
     main();
     document.addEventListener("keydown", changeDirection);
-    alert("you lost");
 }
