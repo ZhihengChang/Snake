@@ -1,28 +1,29 @@
-var http = require('http');
-var fs = require('fs');
+const http = require('http');
+const fs = require('fs');
+const MIMETypes = {
+    html: "text/html",
+    css: "text/css",
+    js: "text/javascript",
+}
+
+function getContentType(request){
+    if(request.url){
+        let key = request.url.split('.').slice(-1)[0];
+        return MIMETypes[key];
+    }
+    return undefined;
+}
+
 http.createServer(function(req, res){
-    if(req.url==='/snake'){
-        res.writeHeader(200, {'content-type':'text/html'});
-        fs.readFile('main.html', function(err, file){
+    let filePath = req.url.slice(1);
+    try{
+        res.writeHeader(200, {'content-type': getContentType(req)});
+        fs.readFile(filePath, function(err, file){
             if(err) throw err;
             res.write(file);
             res.end();
         });
-    }else if(req.url.indexOf("css") != -1){
-        res.writeHeader(200, {'content-type':'text/css'});
-        fs.readFile('src/styles.css', function(err, file){
-            if(err) throw err;
-            res.write(file);
-            res.end();
-        });
-    }else if(req.url.indexOf("js") != -1){
-        res.writeHeader(200, {'content-type':'text/javascript'});
-        fs.readFile('src/snake.js', function(err, file){
-            if(err) throw err;
-            res.write(file);
-            res.end();
-        });
-    }else{
+    }catch(err){
         res.writeHeader(404);
         res.end("Page Not Found!");
     }
